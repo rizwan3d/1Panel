@@ -11,6 +11,7 @@ import {
 } from '@/extensions/xpack';
 import { GlobalStore } from '@/store';
 import faviconUrl from '@/assets/images/favicon.svg';
+import { loadAndApplyBranding } from '@/utils/branding';
 
 let switchThemeFn: (() => void) | undefined;
 
@@ -58,6 +59,10 @@ export async function initFavicon() {
         link.href = href;
     };
 
+    if (favicon?.startsWith('data:image/')) {
+        setLink(favicon);
+        return;
+    }
     if (favicon) {
         const testImg = new Image();
         testImg.onload = () => setLink(customFaviconUrl);
@@ -71,8 +76,9 @@ export async function initFavicon() {
 export async function getXpackSetting() {
     const res = await searchXpackSetting();
     if (!res) {
-        initFavicon();
         resetXSetting();
+        await loadAndApplyBranding();
+        initFavicon();
         return;
     }
     initFavicon();
@@ -175,6 +181,7 @@ export async function getXpackSettingForTheme() {
     } else {
         resetXSetting();
     }
+    await loadAndApplyBranding();
     switchTheme();
     initFavicon();
 }
