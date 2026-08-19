@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, computed, ref, nextTick, provide } from 'vue';
+import { reactive, computed, ref, nextTick, provide, onMounted } from 'vue';
 import { useGlobalStore } from '@/composables/useGlobalStore';
 import zhCn from 'element-plus/es/locale/lang/zh-cn';
 import zhTw from 'element-plus/es/locale/lang/zh-tw';
@@ -20,6 +20,7 @@ import esES from 'element-plus/es/locale/lang/es';
 import fa from 'element-plus/es/locale/lang/fa';
 import lo from 'element-plus/es/locale/lang/lo';
 import { useTheme } from '@/global/use-theme';
+import { loadAndApplyBranding } from '@/utils/branding';
 useTheme();
 
 const { language } = useGlobalStore();
@@ -52,6 +53,10 @@ const reload = () => {
     });
 };
 provide('reload', reload);
+
+onMounted(() => {
+    loadAndApplyBranding();
+});
 </script>
 
 <style scoped lang="scss"></style>
