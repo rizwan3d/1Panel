@@ -22,6 +22,7 @@ func (s *BaseRouter) InitRouter(Router *gin.RouterGroup) {
 		baseRouter.POST("/login", baseApi.Login)
 		baseRouter.POST("/logout", baseApi.LogOut)
 		baseRouter.GET("/setting", baseApi.GetLoginSetting)
+		baseRouter.GET("/branding", baseApi.GetLoginBranding)
 		baseRouter.GET("/welcome", baseApi.GetWelcomePage)
 
 		authRouter.POST("/mfa", baseApi.LoadMFA)
