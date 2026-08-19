@@ -147,7 +147,9 @@ const readBrandingImage = (key: BrandingImageKey, uploadFile: UploadFile) => {
     const isIco = file.name.toLowerCase().endsWith('.ico');
     const allowedLogoTypes = ['image/png', 'image/jpeg', 'image/webp'];
     const allowedIconTypes = ['image/png', 'image/webp', 'image/x-icon', 'image/vnd.microsoft.icon'];
-    const isAllowedType = isLogo ? allowedLogoTypes.includes(file.type) : allowedIconTypes.includes(file.type) || isIco;
+    const isAllowedType = isLogo
+        ? allowedLogoTypes.includes(file.type)
+        : allowedIconTypes.includes(file.type) || isIco;
     if (!isAllowedType) {
         MsgError(i18n.global.t('commons.msg.unSupportType'));
         return;
@@ -199,6 +201,8 @@ const onSavePanelName = async (formEl: FormInstance | undefined) => {
             MsgSuccess(i18n.global.t('commons.msg.operationSuccess'));
             drawerVisible.value = false;
             emit('search');
+        } catch {
+            // The request layer displays the backend validation or update error.
         } finally {
             loading.value = false;
         }
