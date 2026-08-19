@@ -16,14 +16,13 @@ export const updateLoginBranding = (params: LoginBranding) => {
 };
 
 export const applyWebsiteIcon = (websiteIcon: string) => {
-    if (!websiteIcon) return;
     let link = document.querySelector("link[rel*='icon']") as HTMLLinkElement | null;
     if (!link) {
         link = document.createElement('link');
         link.rel = 'shortcut icon';
         document.head.appendChild(link);
     }
-    link.href = websiteIcon;
+    link.href = websiteIcon || '/public/favicon.png';
 };
 
 export const loadAndApplyBranding = async () => {
