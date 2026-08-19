@@ -25,7 +25,29 @@
                     />
                 </div>
                 <div :class="loginFormClass">
-                    <LoginForm ref="loginRef" @external-login-ready="externalLoginPending = false"></LoginForm>
+                    <div class="w-full h-full flex flex-col">
+                        <div
+                            v-if="branding.logo || branding.welcomeMessage"
+                            class="shrink-0 flex flex-col items-center justify-center gap-1 mb-2 text-center px-4"
+                        >
+                            <img
+                                v-if="branding.logo"
+                                :src="branding.logo"
+                                class="max-h-10 max-w-[260px] object-contain"
+                                :alt="branding.welcomeMessage || themeConfig.panelName || '1Panel'"
+                            />
+                            <div
+                                v-if="branding.welcomeMessage"
+                                class="text-sm text-gray-600 leading-5 max-w-full line-clamp-2"
+                                :title="branding.welcomeMessage"
+                            >
+                                {{ branding.welcomeMessage }}
+                            </div>
+                        </div>
+                        <div class="flex-1 min-h-0 overflow-y-auto">
+                            <LoginForm ref="loginRef" @external-login-ready="externalLoginPending = false"></LoginForm>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -38,6 +60,7 @@ import { ref, onMounted } from 'vue';
 import { useGlobalStore } from '@/composables/useGlobalStore';
 import { preloadImage } from '@/utils/browser';
 import { hasExternalLoginTicket } from '@/utils/external-login';
+import { getLoginBranding } from '@/utils/branding';
 defineOptions({ name: 'Login' });
 const { entrance, isEnterprise, themeConfig } = useGlobalStore();
 const backgroundOpacity = ref(1);
@@ -49,6 +72,11 @@ const loadedBackgroundImage = ref<string | null>(null);
 const backgroundStyle = ref<{ backgroundImage?: string; backgroundColor?: string }>({});
 const imgLoaded = ref(false);
 const currentDefaultLoginImage = computed(() => (isEnterprise.value ? defaultEnterpriseLoginImage : defaultLoginImage));
+const branding = ref({
+    welcomeMessage: '',
+    logo: '',
+    websiteIcon: '',
+});
 
 const externalLoginPending = ref(hasExternalLoginTicket());
 
@@ -66,6 +94,15 @@ const getStatus = async () => {
     let code = mySafetyCode.code;
     if (code != '') {
         entrance.value = code;
+    }
+};
+
+const loadBranding = async () => {
+    try {
+        const res = await getLoginBranding();
+        branding.value = res.data;
+    } catch {
+        branding.value = { welcomeMessage: '', logo: '', websiteIcon: '' };
     }
 };
 
@@ -105,6 +142,7 @@ const onImgError = (event: any) => {
 
 onMounted(async () => {
     await getStatus();
+    await loadBranding();
     const loginImageUrl = `/api/v2/images/loginImage?t=${Date.now()}`;
     const backgroundImageUrl = `/api/v2/images/loginBackground?t=${Date.now()}`;
     if (themeConfig.value.loginImage === 'loginImage') {
